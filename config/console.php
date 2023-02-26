@@ -3,6 +3,14 @@
 $params = require __DIR__ . '/params.php';
 $db = require __DIR__ . '/db.php';
 
+// If production files exist, use them
+if (file_exists(__DIR__ . '/db_production.php')) {
+    $db = require __DIR__ . '/db_production.php';
+}
+if (file_exists(__DIR__ . '/params_production.php')) {
+    $params = require __DIR__ . '/params_production.php';
+}
+
 $config = [
     'id' => 'basic-console',
     'basePath' => dirname(__DIR__),
@@ -49,7 +57,7 @@ if (YII_ENV_DEV) {
     $config['modules']['debug'] = [
         'class' => 'yii\debug\Module',
         // uncomment the following to add your IP if you are not connecting from localhost.
-        //'allowedIPs' => ['127.0.0.1', '::1'],
+        'allowedIPs' => ['127.0.0.1', '::1', '172.25.0.1'],
     ];
 }
 
