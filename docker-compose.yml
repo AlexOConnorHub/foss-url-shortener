@@ -6,4 +6,12 @@ services:
       - ~/.composer-docker/cache:/root/.composer/cache:delegated
       - ./:/app:delegated
     ports:
-      - '8000:80'
+      - '8002:80'
+  db:
+    image: "mariadb:jammy"
+    restart: 'always'
+    environment:
+      MYSQL_ROOT_PASSWORD: "mysql-root-password"
+      MYSQL_DATABASE: "yii"
+      MYSQL_USER: "yii"
+      MYSQL_PASSWORD: "yii-mysql-password"
