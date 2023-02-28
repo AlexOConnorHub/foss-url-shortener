@@ -21,8 +21,19 @@ jobs:
           php-version: ${{ matrix.php-versions }}
           tools: composer:v2
 
+      - name: Setup MariaDB
+        uses: getong/mariadb-action@v1.1
+        with:
+          mysql database: 'yii_test' # Optional, default value is "test". The specified database which will be create
+          mysql root password: ${{ secrets.RootPassword }} # Required if "mysql user" is empty, default is empty. The root superuser password
+          mysql user: 'yii_test' # Required if "mysql root password" is empty, default is empty. The superuser for the specified database. Can use secrets, too
+          mysql password: 'yii_test-mysql-password' # Required if "mysql user" exists. The password for the "mysql user"
+
       - name: Install Composer dependencies
         run: composer update
+
+      - name: Migration
+        run: tests/bin/yii migrate --interactive=0
 
       - name: Run tests
         run: vendor/bin/codecept run
