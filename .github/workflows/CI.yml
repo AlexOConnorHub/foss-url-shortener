@@ -30,11 +30,10 @@ jobs:
 
       - name: Install Composer dependencies
         run: composer update
-
-      - name: "Migrate database"
-        run:
-          mysql -u root -e 'CREATE DATABASE yii_test; GRANT ALL PRIVILEGES ON yii_test.* TO yii_test@localhost IDENTIFIED BY \"yii_test-mysql-password\";'"
-          vendor/bin/yii migrate --interactive=0
+      
+      # Now we setup the database
+      - name: Migration
+        run: vendor/bin/yii migrate --interactive=0
 
       - name: Run tests
         run: vendor/bin/codecept run
