@@ -15,18 +15,19 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v2
 
-      - name: Set up PHP
-        uses: shivammathur/setup-php@v2
-        with:
-          php-version: ${{ matrix.php-versions }}
-          tools: composer:v2
-
       - name: Setup MariaDB
         uses: getong/mariadb-action@v1.1
         with:
           mysql database: 'yii_test'
           mysql user: 'yii_test'
           mysql password: 'yii_test-mysql-password'
+        # What IP address should I use in the connection string?
+
+      - name: Set up PHP
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: ${{ matrix.php-versions }}
+          tools: composer:v2
 
       - name: Install Composer dependencies
         run: composer update
