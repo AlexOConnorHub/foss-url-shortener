@@ -4,9 +4,17 @@ namespace tests\unit\models;
 
 use app\models\LoginForm;
 
-class LoginFormTest extends \Codeception\Test\Unit
-{
+class LoginFormTest extends \Codeception\Test\Unit {
     private $model;
+    
+    public function _fixtures() {
+        return [
+            'Users' => [
+                'class' => \app\tests\fixtures\UserFixture::class,
+                'dataFile' => codecept_data_dir() . 'user.php',
+            ],
+        ];
+    }
 
     protected function _after()
     {
