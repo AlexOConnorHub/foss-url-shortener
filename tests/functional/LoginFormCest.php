@@ -1,7 +1,15 @@
 <?php
 
-class LoginFormCest
-{
+class LoginFormCest {
+    public function _fixtures() {
+        return [
+            'Users' => [
+                'class' => \app\tests\fixtures\UserFixture::class,
+                'dataFile' => codecept_data_dir() . 'user.php',
+            ],
+        ];
+    }
+
     public function _before(\FunctionalTester $I)
     {
         $I->amOnRoute('site/login');
