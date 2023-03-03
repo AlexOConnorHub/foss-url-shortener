@@ -21,6 +21,18 @@ class VisitController extends Controller
         return array_merge(
             parent::behaviors(),
             [
+                'access' => [
+                    'class' => \yii\filters\AccessControl::className(),
+                    'rules' => [
+                        [
+                            'allow' => true,
+                            'actions' => ['index'],
+                            'matchCallback' => function ($rule, $action) {
+                                return \Yii::$app->user->isAdmin;
+                            },
+                        ],
+                    ],
+                ],
                 'verbs' => [
                     'class' => VerbFilter::className(),
                     'actions' => [
@@ -38,9 +50,9 @@ class VisitController extends Controller
      */
     public function actionIndex()
     {
+        Visit::record();
         $searchModel = new VisitSearch();
         $dataProvider = $searchModel->search($this->request->queryParams);
-
         return $this->render('index', [
             'searchModel' => $searchModel,
             'dataProvider' => $dataProvider,

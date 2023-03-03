@@ -3,6 +3,7 @@
 namespace app\models;
 
 use Yii;
+use app\models\User;
 
 /**
  * This is the model class for table "visits".
@@ -40,9 +41,10 @@ class Visit extends \yii\db\ActiveRecord
             [['shortened_id', 'user_id'], 'integer'],
             [['ip'], 'required'],
             [['created_at'], 'safe'],
-            [['country_code', 'ip', 'user_agent', 'accepted_languages', 'isp'], 'string', 'max' => 255],
+            [['country_code'], 'string', 'max' => 2],
+            [['ip', 'user_agent', 'accepted_languages', 'isp'], 'string', 'max' => 255],
             [['shortened_id'], 'exist', 'skipOnError' => true, 'targetClass' => Shortened::class, 'targetAttribute' => ['shortened_id' => 'id']],
-            [['user_id'], 'exist', 'skipOnError' => true, 'targetClass' => Users::class, 'targetAttribute' => ['user_id' => 'id']],
+            [['user_id'], 'exist', 'skipOnError' => true, 'targetClass' => User::class, 'targetAttribute' => ['user_id' => 'id']],
         ];
     }
 
@@ -56,11 +58,11 @@ class Visit extends \yii\db\ActiveRecord
             'shortened_id' => 'Shortened ID',
             'country_code' => 'Country Code',
             'user_id' => 'User ID',
-            'ip' => 'Ip',
+            'ip' => 'IP',
             'user_agent' => 'User Agent',
             'accepted_languages' => 'Accepted Languages',
             'created_at' => 'Created At',
-            'isp' => 'Isp',
+            'isp' => 'ISP',
         ];
     }
 
@@ -87,19 +89,34 @@ class Visit extends \yii\db\ActiveRecord
     /**
      * Gets query for [[User]].
      *
-     * @return \yii\db\ActiveQuery|UsersQuery
+     * @return \yii\db\ActiveQuery|UserSearch
      */
     public function getUser()
     {
-        return $this->hasOne(Users::class, ['id' => 'user_id']);
+        return $this->hasOne(User::class, ['id' => 'user_id']);
     }
 
     /**
-     * {@inheritdoc}
-     * @return VisitSearch the active query used by this AR class.
+     * Records a visit to a shortened URL.
      */
-    public static function find()
-    {
-        return new VisitSearch(get_called_class());
+    public static function record($shortened_id = null) {
+        $visit = new Visit();
+        $visit->shortened_id = $shortened_id;
+        $visit->ip = Yii::$app->request->userIP;
+        $visit->user_agent = Yii::$app->request->userAgent;
+        $str = '';
+        foreach (Yii::$app->request->getAcceptableLanguages() as $lang) {
+            $str .= $lang . ',';
+        }
+        $visit->accepted_languages = $str;
+        $visit->user_id = (Yii::$app->user->id ?? null);
+        $visit->created_at = date('Y-m-d H:i:s');
+        // TODO: Make API Call to api.iplocation.net to get country code and ISP
+        if ($visit->save()) {
+            return $visit;
+        } else {
+            Yii::error($visit->getErrors());
+            return false;
+        }
     }
 }

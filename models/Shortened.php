@@ -95,4 +95,14 @@ class Shortened extends \yii\db\ActiveRecord
     {
         return new ShortenedrSearch(get_called_class());
     }
+
+    /**
+     * Get full URL
+     * @return string
+     */
+    public function getUrl() {
+        // Use a helper to get the base URL
+        $base = Yii::$app->request->hostInfo;
+        return $base . '/r/' . $this->redirect_uuid;
+    }
 }
