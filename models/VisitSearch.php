@@ -4,6 +4,7 @@ namespace app\models;
 
 use yii\base\Model;
 use yii\data\ActiveDataProvider;
+use app\models\Shortened;
 use app\models\Visit;
 
 /**
@@ -70,6 +71,13 @@ class VisitSearch extends Visit
             ->andFilterWhere(['like', 'accepted_languages', $this->accepted_languages])
             ->andFilterWhere(['like', 'isp', $this->isp]);
 
+        if (!\Yii::$app->user->isAdmin) {
+            $shortenedIds = Shortened::find()
+                ->select('id')
+                ->where(['user_id' => \Yii::$app->user->id])
+                ->column();
+            $query->andFilterWhere(['in', 'shortened_id', $shortenedIds]);
+        }
         return $dataProvider;
     }
 }

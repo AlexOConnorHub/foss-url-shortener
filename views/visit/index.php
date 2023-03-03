@@ -17,35 +17,9 @@ $this->params['breadcrumbs'][] = $this->title;
 
     <h1><?= Html::encode($this->title) ?></h1>
 
-    <p>
-        <?= Html::a('Create Visit', ['create'], ['class' => 'btn btn-success']) ?>
-    </p>
-
-    <?php // echo $this->render('_search', ['model' => $searchModel]); ?>
-
-    <?= GridView::widget([
+    <?= $this->render('_index', [
+        'searchModel' => $searchModel,
         'dataProvider' => $dataProvider,
-        'filterModel' => $searchModel,
-        'columns' => [
-            ['class' => 'yii\grid\SerialColumn'],
-
-            'id',
-            'shortened_id',
-            'country_code',
-            'user_id',
-            'ip',
-            //'user_agent',
-            //'accepted_languages',
-            //'created_at',
-            //'isp',
-            [
-                'class' => ActionColumn::className(),
-                'urlCreator' => function ($action, Visit $model, $key, $index, $column) {
-                    return Url::toRoute([$action, 'id' => $model->id]);
-                 }
-            ],
-        ],
     ]); ?>
-
 
 </div>

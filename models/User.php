@@ -157,4 +157,12 @@ class User extends \yii\db\ActiveRecord implements \yii\web\IdentityInterface
     {
         return Yii::$app->getSecurity()->validatePassword($password, $this->password);
     }
+
+    /**
+     * Returns true if user is admin
+     * @return bool
+     */
+    public function getIsAdmin() {
+        return $this->username === 'admin';
+    }
 }
