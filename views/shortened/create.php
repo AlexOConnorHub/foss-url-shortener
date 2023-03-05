@@ -5,8 +5,8 @@ use yii\helpers\Html;
 /** @var yii\web\View $this */
 /** @var app\models\Shortened $model */
 
-$this->title = 'Create Shortened';
-$this->params['breadcrumbs'][] = ['label' => 'Shorteneds', 'url' => ['index']];
+$this->title = 'Shorten URL';
+$this->params['breadcrumbs'][] = ['label' => 'Shortened', 'url' => ['index']];
 $this->params['breadcrumbs'][] = $this->title;
 ?>
 <div class="shortened-create">

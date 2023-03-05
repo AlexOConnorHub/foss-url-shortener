@@ -7,10 +7,8 @@ namespace app\models;
  *
  * @see UserDB
  */
-class UserSearch extends \yii\db\ActiveQuery
-{
-    /*public function active()
-    {
+class UserSearch extends \yii\db\ActiveQuery {
+    /*public function active() {
         return $this->andWhere('[[status]]=1');
     }*/
 
@@ -18,8 +16,7 @@ class UserSearch extends \yii\db\ActiveQuery
      * {@inheritdoc}
      * @return UserDB[]|array
      */
-    public function all($db = null)
-    {
+    public function all($db = null) {
         return parent::all($db);
     }
 
@@ -27,8 +24,7 @@ class UserSearch extends \yii\db\ActiveQuery
      * {@inheritdoc}
      * @return UserDB|array|null
      */
-    public function one($db = null)
-    {
+    public function one($db = null) {
         return parent::one($db);
     }
 }

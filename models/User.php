@@ -17,33 +17,33 @@ use Yii;
  * @property Shortened[] $shorteneds
  * @property Visits[] $visits
  */
-class User extends \yii\db\ActiveRecord implements \yii\web\IdentityInterface
-{
+class User extends \yii\db\ActiveRecord implements \yii\web\IdentityInterface {
+
+    public $password_repeat;
+
     /**
      * {@inheritdoc}
      */
-    public static function tableName()
-    {
+    public static function tableName() {
         return 'users';
     }
 
     /**
      * {@inheritdoc}
      */
-    public function rules()
-    {
+    public function rules() {
         return [
             [['username', 'password'], 'required'],
             [['created_at'], 'safe'],
             [['username', 'password', 'auth_key', 'access_token'], 'string', 'max' => 255],
+            [['username'], 'unique'],
         ];
     }
 
     /**
      * {@inheritdoc}
      */
-    public function attributeLabels()
-    {
+    public function attributeLabels() {
         return [
             'id' => 'ID',
             'username' => 'Username',
@@ -57,8 +57,8 @@ class User extends \yii\db\ActiveRecord implements \yii\web\IdentityInterface
     public function beforeSave($insert) {
         if (parent::beforeSave($insert)) {
             if ($this->isNewRecord) {
-                $this->auth_key = \Yii::$app->security->generateRandomString();
-                $this->access_token = \Yii::$app->security->generateRandomString();
+                $this->auth_key = Yii::$app->security->generateRandomString();
+                $this->access_token = Yii::$app->security->generateRandomString();
                 $this->password = Yii::$app->getSecurity()->generatePasswordHash($this->password);
             }
             return true;
@@ -71,8 +71,7 @@ class User extends \yii\db\ActiveRecord implements \yii\web\IdentityInterface
      *
      * @return \yii\db\ActiveQuery|ShortenedrSearch
      */
-    public function getShorteneds()
-    {
+    public function getShorteneds() {
         return $this->hasMany(Shortened::class, ['user_id' => 'id']);
     }
 
@@ -81,8 +80,7 @@ class User extends \yii\db\ActiveRecord implements \yii\web\IdentityInterface
      *
      * @return \yii\db\ActiveQuery|VisitsQuery
      */
-    public function getVisits()
-    {
+    public function getVisits() {
         return $this->hasMany(Visits::class, ['user_id' => 'id']);
     }
 
@@ -90,16 +88,14 @@ class User extends \yii\db\ActiveRecord implements \yii\web\IdentityInterface
      * {@inheritdoc}
      * @return UserSearch the active query used by this AR class.
      */
-    public static function find()
-    {
+    public static function find() {
         return new UserSearch(get_called_class());
     }
 
     /**
      * {@inheritdoc}
      */
-    public function getAuthKey()
-    {
+    public function getAuthKey() {
         return $this->auth_key;
     }
 
@@ -107,24 +103,21 @@ class User extends \yii\db\ActiveRecord implements \yii\web\IdentityInterface
     /**
      * {@inheritdoc}
      */
-    public static function findIdentity($id)
-    {
+    public static function findIdentity($id) {
         return static::findOne($id);;
     }
 
     /**
      * {@inheritdoc}
      */
-    public static function findIdentityByAccessToken($token, $type = null)
-    {
+    public static function findIdentityByAccessToken($token, $type = null) {
         return static::findOne(['access_token' => $token]);
     }
 
     /**
      * @return int|string current user ID
      */
-    public function getId()
-    {
+    public function getId() {
         return $this->id;
     }
 
@@ -134,16 +127,14 @@ class User extends \yii\db\ActiveRecord implements \yii\web\IdentityInterface
      * @param string $username
      * @return static|null
      */
-    public static function findByUsername($username)
-    {
+    public static function findByUsername($username) {
         return static::findOne(['username' => $username]);
     }
 
     /**
      * {@inheritdoc}
      */
-    public function validateAuthKey($authKey)
-    {
+    public function validateAuthKey($authKey) {
         return $this->authKey === $authKey;
     }
 
@@ -153,8 +144,7 @@ class User extends \yii\db\ActiveRecord implements \yii\web\IdentityInterface
      * @param string $password password to validate
      * @return bool if password provided is valid for current user
      */
-    public function validatePassword($password)
-    {
+    public function validatePassword($password) {
         return Yii::$app->getSecurity()->validatePassword($password, $this->password);
     }
 

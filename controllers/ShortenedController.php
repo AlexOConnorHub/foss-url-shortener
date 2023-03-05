@@ -4,25 +4,66 @@ namespace app\controllers;
 
 use app\models\Shortened;
 use app\models\ShortenedSearch;
+use app\models\Visit;
+use app\models\VisitSearch;
 use yii\web\Controller;
 use yii\web\NotFoundHttpException;
 use yii\filters\VerbFilter;
+use Yii;
 
 /**
  * ShortenedController implements the CRUD actions for Shortened model.
  */
-class ShortenedController extends Controller
-{
+class ShortenedController extends Controller {
     /**
      * @inheritDoc
      */
-    public function behaviors()
-    {
+    public function behaviors() {
         return array_merge(
             parent::behaviors(),
             [
+                'access' => [
+                    'class' => \yii\filters\AccessControl::class,
+                    'rules' => [
+                        [
+                            'allow' => true,
+                            'actions' => ['create', 'redirect'],
+                        ],
+                        [
+                            'allow' => true,
+                            'actions' => ['index'],
+                            'matchCallback' => function ($rule, $action) {
+                                return Yii::$app->user || Yii::$app->user->isAdmin;
+                            },
+                        ],
+                        [
+                            'allow' => true,
+                            'actions' => ['view', 'update', 'delete'],
+                            'matchCallback' => function ($rule, $action) {
+                                $uuid =  $this->request->getQueryParam('uuid');
+                                if (!$uuid || !Yii::$app->user) {
+                                    return false;
+                                }
+                                $model = Shortened::findOne(['edit_uuid' => $uuid]);
+                                if ($model === null) {
+                                    return false;
+                                }
+                                if ($model->user_id === Yii::$app->user->id) {
+                                    return true;
+                                }
+                                if (Yii::$app->user->isAdmin) {
+                                    return true;
+                                }
+                                if ($model->user_id === null) {
+                                    return true;
+                                }
+                            },
+                        ],
+
+                    ],
+                ],
                 'verbs' => [
-                    'class' => VerbFilter::className(),
+                    'class' => VerbFilter::class,
                     'actions' => [
                         'delete' => ['POST'],
                     ],
@@ -36,10 +77,12 @@ class ShortenedController extends Controller
      *
      * @return string
      */
-    public function actionIndex()
-    {
+    public function actionIndex() {
         $searchModel = new ShortenedSearch();
         $dataProvider = $searchModel->search($this->request->queryParams);
+        if (!Yii::$app->user->isAdmin) {
+            $dataProvider->query->andWhere(['user_id' => Yii::$app->user->id]);
+        }
 
         return $this->render('index', [
             'searchModel' => $searchModel,
@@ -53,10 +96,17 @@ class ShortenedController extends Controller
      * @return string
      * @throws NotFoundHttpException if the model cannot be found
      */
-    public function actionView($id)
-    {
+    public function actionView($uuid) {
+        $model = Shortened::findOne(['edit_uuid' => $uuid]);
+
+        $searchModel = new VisitSearch();
+        $dataProvider = $searchModel->search($this->request->queryParams);
+        $dataProvider->query->andWhere(['shortened_id' => $model->id]);
+        
         return $this->render('view', [
-            'model' => $this->findModel($id),
+            'model' => $model,
+            'searchModel' => $searchModel,
+            'dataProvider' => $dataProvider,
         ]);
     }
 
@@ -65,16 +115,14 @@ class ShortenedController extends Controller
      * If creation is successful, the browser will be redirected to the 'view' page.
      * @return string|\yii\web\Response
      */
-    public function actionCreate()
-    {
+    public function actionCreate() {
         $model = new Shortened();
-
         if ($this->request->isPost) {
             if ($model->load($this->request->post()) && $model->save()) {
-                return $this->redirect(['view', 'id' => $model->id]);
+                return $this->redirect(['view', 'uuid' => $model->edit_uuid]);
+            } else {
+                Yii::error($model->errors);
             }
-        } else {
-            $model->loadDefaultValues();
         }
 
         return $this->render('create', [
@@ -89,12 +137,11 @@ class ShortenedController extends Controller
      * @return string|\yii\web\Response
      * @throws NotFoundHttpException if the model cannot be found
      */
-    public function actionUpdate($id)
-    {
-        $model = $this->findModel($id);
+    public function actionUpdate($uuid) {
+        $model = Shortened::findOne(['edit_uuid' => $uuid]);
 
         if ($this->request->isPost && $model->load($this->request->post()) && $model->save()) {
-            return $this->redirect(['view', 'id' => $model->id]);
+            return $this->redirect(['view', 'uuid' => $model->edit_uuid]);
         }
 
         return $this->render('update', [
@@ -109,9 +156,8 @@ class ShortenedController extends Controller
      * @return \yii\web\Response
      * @throws NotFoundHttpException if the model cannot be found
      */
-    public function actionDelete($id)
-    {
-        $this->findModel($id)->delete();
+    public function actionDelete($uuid) {
+        $model = Shortened::findOne(['edit_uuid' => $uuid])->delete();
 
         return $this->redirect(['index']);
     }
@@ -123,12 +169,35 @@ class ShortenedController extends Controller
      * @return Shortened the loaded model
      * @throws NotFoundHttpException if the model cannot be found
      */
-    protected function findModel($id)
-    {
+    protected function findModel($id) {
         if (($model = Shortened::findOne(['id' => $id])) !== null) {
             return $model;
         }
 
         throw new NotFoundHttpException('The requested page does not exist.');
+    }
+
+    /**
+     * Redirects to the URL
+     * @return \yii\web\Response
+     */
+    public function actionRedirect($uuid) {
+        $shrt = Shortened::find()->where(['redirect_uuid' => $uuid])->one();
+
+        $visit = new Visit();
+        $visit->shortened_id = $shrt->id;
+        $visit->ip = Yii::$app->request->userIP;
+        $visit->user_agent = Yii::$app->request->userAgent;
+        $str = '';
+        foreach (Yii::$app->request->getAcceptableLanguages() as $lang) {
+            $str .= $lang . ',';
+        }
+        $visit->accepted_languages = $str;
+        $visit->user_id = (Yii::$app->user->id ?? null);
+        $visit->created_at = date('Y-m-d H:i:s');
+        $visit->save();
+
+        Yii::$app->queue->push(new \app\jobs\VisitJob(['shortened_id' => $shrt->id, 'visit_id' => $visit->id]));
+        return Yii::$app->response->redirect($shrt->redirect_url);
     }
 }

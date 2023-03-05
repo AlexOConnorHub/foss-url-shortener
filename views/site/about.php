@@ -9,10 +9,9 @@ $this->params['breadcrumbs'][] = $this->title;
 ?>
 <div class="site-about">
     <h1><?= Html::encode($this->title) ?></h1>
-
     <p>
-        This is the About page. You may modify the following file to customize its content:
+        Whenever I needed a link shortener, I never found a good solution.
+        The obvious next step was to create my own.
+        This is that solution, enjoy.
     </p>
-
-    <code><?= __FILE__ ?></code>
 </div>

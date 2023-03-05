@@ -6,18 +6,18 @@ use yii\widgets\DetailView;
 /** @var yii\web\View $this */
 /** @var app\models\Shortened $model */
 
-$this->title = $model->id;
-$this->params['breadcrumbs'][] = ['label' => 'Shorteneds', 'url' => ['index']];
+$this->title = $model->edit_uuid;
+$this->params['breadcrumbs'][] = ['label' => 'Shortened', 'url' => ['index']];
 $this->params['breadcrumbs'][] = $this->title;
 \yii\web\YiiAsset::register($this);
 ?>
 <div class="shortened-view">
 
-    <h1><?= Html::encode($this->title) ?></h1>
+    <h2>Redirect <?= Html::a(Html::encode($model->url), $model->url) ?> to <?= Html::a(Html::encode($model->redirect_url), $model->redirect_url) ?> </h2>
 
     <p>
-        <?= Html::a('Update', ['update', 'id' => $model->id], ['class' => 'btn btn-primary']) ?>
-        <?= Html::a('Delete', ['delete', 'id' => $model->id], [
+        <?= Html::a('Update redirect locaiton', ['update', 'uuid' => $model->edit_uuid], ['class' => 'btn btn-primary']) ?>
+        <?= Html::a('Delete', ['delete', 'uuid' => $model->edit_uuid], [
             'class' => 'btn btn-danger',
             'data' => [
                 'confirm' => 'Are you sure you want to delete this item?',
@@ -26,16 +26,9 @@ $this->params['breadcrumbs'][] = $this->title;
         ]) ?>
     </p>
 
-    <?= DetailView::widget([
-        'model' => $model,
-        'attributes' => [
-            'id',
-            'user_id',
-            'visit_id',
-            'edit_uuid',
-            'redirect_uuid',
-            'redirect_url:url',
-        ],
+    <?= $this->render("/visit/_index", [
+        'dataProvider' => $dataProvider,
+        'searchModel' => $searchModel,
     ]) ?>
 
 </div>

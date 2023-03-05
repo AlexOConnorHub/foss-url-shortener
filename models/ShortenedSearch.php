@@ -9,15 +9,13 @@ use app\models\Shortened;
 /**
  * ShortenedSearch represents the model behind the search form of `app\models\Shortened`.
  */
-class ShortenedSearch extends Shortened
-{
+class ShortenedSearch extends Shortened {
     /**
      * {@inheritdoc}
      */
-    public function rules()
-    {
+    public function rules() {
         return [
-            [['id', 'user_id', 'visit_id'], 'integer'],
+            [['id', 'user_id'], 'integer'],
             [['edit_uuid', 'redirect_uuid', 'redirect_url'], 'safe'],
         ];
     }
@@ -25,8 +23,7 @@ class ShortenedSearch extends Shortened
     /**
      * {@inheritdoc}
      */
-    public function scenarios()
-    {
+    public function scenarios() {
         // bypass scenarios() implementation in the parent class
         return Model::scenarios();
     }
@@ -38,8 +35,7 @@ class ShortenedSearch extends Shortened
      *
      * @return ActiveDataProvider
      */
-    public function search($params)
-    {
+    public function search($params) {
         $query = Shortened::find();
 
         // add conditions that should always apply here
@@ -60,7 +56,6 @@ class ShortenedSearch extends Shortened
         $query->andFilterWhere([
             'id' => $this->id,
             'user_id' => $this->user_id,
-            'visit_id' => $this->visit_id,
         ]);
 
         $query->andFilterWhere(['like', 'edit_uuid', $this->edit_uuid])

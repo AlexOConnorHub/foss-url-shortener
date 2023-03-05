@@ -5,9 +5,9 @@ use yii\helpers\Html;
 /** @var yii\web\View $this */
 /** @var app\models\Shortened $model */
 
-$this->title = 'Update Shortened: ' . $model->id;
-$this->params['breadcrumbs'][] = ['label' => 'Shorteneds', 'url' => ['index']];
-$this->params['breadcrumbs'][] = ['label' => $model->id, 'url' => ['view', 'id' => $model->id]];
+$this->title = 'Update Shortened ' . $model->edit_uuid;
+$this->params['breadcrumbs'][] = ['label' => 'Shortened', 'url' => ['index']];
+$this->params['breadcrumbs'][] = ['label' => $model->edit_uuid, 'url' => ['view', 'uuid' => $model->edit_uuid]];
 $this->params['breadcrumbs'][] = 'Update';
 ?>
 <div class="shortened-update">
