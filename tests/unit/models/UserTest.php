@@ -7,9 +7,9 @@ use app\models\User;
 class UserTest extends \Codeception\Test\Unit {
     public function _fixtures() {
         return [
-            'Users' => [
+            'User' => [
                 'class' => \app\tests\fixtures\UserFixture::class,
-                'dataFile' => codecept_data_dir() . 'user.php',
+                'dataFile' => '@app/tests/fixtures/_data/user.php',
             ],
         ];
     }

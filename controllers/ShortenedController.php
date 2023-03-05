@@ -33,7 +33,7 @@ class ShortenedController extends Controller {
                             'allow' => true,
                             'actions' => ['index'],
                             'matchCallback' => function ($rule, $action) {
-                                return Yii::$app->user || Yii::$app->user->isAdmin;
+                                return Yii::$app->user || (Yii::$app->user->identity ? Yii::$app->user->identity->isAdmin : false);
                             },
                         ],
                         [
@@ -51,7 +51,7 @@ class ShortenedController extends Controller {
                                 if ($model->user_id === Yii::$app->user->id) {
                                     return true;
                                 }
-                                if (Yii::$app->user->isAdmin) {
+                                if ((Yii::$app->user->identity ? Yii::$app->user->identity->isAdmin : false)) {
                                     return true;
                                 }
                                 if ($model->user_id === null) {
@@ -80,7 +80,7 @@ class ShortenedController extends Controller {
     public function actionIndex() {
         $searchModel = new ShortenedSearch();
         $dataProvider = $searchModel->search($this->request->queryParams);
-        if (!Yii::$app->user->isAdmin) {
+        if (!(Yii::$app->user->identity ? Yii::$app->user->identity->isAdmin : false)) {
             $dataProvider->query->andWhere(['user_id' => Yii::$app->user->id]);
         }
 

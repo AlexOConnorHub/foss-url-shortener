@@ -17,11 +17,11 @@ use yii\grid\GridView;
 
     <?= GridView::widget([
         'dataProvider' => $dataProvider,
-        'filterModel' => Yii::$app->user->isAdmin ? $searchModel : null,
+        'filterModel' => (Yii::$app->user->identity ? Yii::$app->user->identity->isAdmin : false) ? $searchModel : null,
         'columns' => [
             [
                 'attribute' => 'user_id',
-                'visible' => Yii::$app->user->isAdmin,
+                'visible' => (Yii::$app->user->identity ? Yii::$app->user->identity->isAdmin : false),
                 'value' => function (Shortened $model) {
                     if ($model->user_id === null) {
                         return 'NA';
