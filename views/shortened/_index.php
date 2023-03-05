@@ -23,14 +23,28 @@ use yii\grid\GridView;
                 'attribute' => 'user_id',
                 'visible' => Yii::$app->user->isAdmin,
                 'value' => function (Shortened $model) {
-                    return Yii::$app->user->username;
+                    if ($model->user_id === null) {
+                        return 'NA';
+                    }
+                    return $model->user->username;
                 }
             ],
             [
-                'attribute' => 'url',
+                'attribute' => 'redirect_url',
+                'label' => 'Link to',
                 'format' => 'raw',
                 'value' => function (Shortened $model) {
-                    return Html::a(Html::encode($model->url), $model->url, ['target' => '_blank']);
+                    return Html::a(Html::encode($model->redirect_url), $model->redirect_url, ['target' => '_blank']);
+                }
+            ],
+            [
+                'label' => "Manage link",
+                'format' => 'raw',
+                'attribute' => 'edit_uuid',
+                'value' => function (Shortened $model) {
+                    $base = Url::base(true);
+                    $url = Url::toRoute(['shortened/view', 'uuid' => $model->edit_uuid]);
+                    return Html::a($base . $url, $url);
                 }
             ],
             [
@@ -41,6 +55,7 @@ use yii\grid\GridView;
             ],
             [
                 'class' => ActionColumn::class,
+                'template' => '{update} {delete}',
                 'urlCreator' => function ($action, Shortened $model, $key, $index, $column) {
                     return Url::toRoute([$action, 'uuid' => $model->edit_uuid]);
                  }

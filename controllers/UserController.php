@@ -19,6 +19,16 @@ class UserController extends Controller {
         return array_merge(
             parent::behaviors(),
             [
+                'access' => [
+                    'class' => \yii\filters\AccessControl::class,
+                    'rules' => [
+                        [
+                            // Disable all actions
+                            'allow' => false,
+                            'actions' => ['index', 'view', 'create', 'update', 'delete'],
+                        ],
+                    ],
+                ],
                 'verbs' => [
                     'class' => VerbFilter::class,
                     'actions' => [
