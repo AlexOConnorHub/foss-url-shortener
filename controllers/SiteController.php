@@ -9,14 +9,13 @@ use yii\web\Response;
 use yii\filters\VerbFilter;
 use app\models\LoginForm;
 use app\models\ContactForm;
+use app\models\User;
 
-class SiteController extends Controller
-{
+class SiteController extends Controller {
     /**
      * {@inheritdoc}
      */
-    public function behaviors()
-    {
+    public function behaviors() {
         return [
             'access' => [
                 'class' => AccessControl::class,
@@ -29,20 +28,13 @@ class SiteController extends Controller
                     ],
                 ],
             ],
-            'verbs' => [
-                'class' => VerbFilter::class,
-                'actions' => [
-                    'logout' => ['post'],
-                ],
-            ],
         ];
     }
 
     /**
      * {@inheritdoc}
      */
-    public function actions()
-    {
+    public function actions() {
         return [
             'error' => [
                 'class' => 'yii\web\ErrorAction',
@@ -59,9 +51,65 @@ class SiteController extends Controller
      *
      * @return string
      */
-    public function actionIndex()
-    {
-        return $this->render('index');
+    public function actionIndex() {
+        $model = new LoginForm();
+        $model->isNew = true;
+
+        // If post, is a user signing up
+        if (Yii::$app->request->isPost) {
+            $model->load(Yii::$app->request->post());
+            if (!$model->validate()) {
+                Yii::error($model->errors);
+                return $this->render('index', ['model' => $model,]);
+            } else {
+            }
+            $user = new User();
+            $user->username = $model->username;
+            $user->password = $model->password;
+            $user->save();
+            if ($user->hasErrors()) {
+                Yii::error($user->errors);
+                $model->addErrors($user->errors);
+                return $this->render('index', ['model' => $model,]);
+            }
+            $model->login();
+            return $this->redirect(['shortened/create']);
+        }
+
+        return $this->render('index', ['model' => $model,]);
+    }
+
+    /**
+     * Displays homepage.
+     *
+     * @return string
+     */
+    public function actionSignup() {
+        $model = new LoginForm();
+        $model->isNew = true;
+
+        // If post, is a user signing up
+        if (Yii::$app->request->isPost) {
+            $model->load(Yii::$app->request->post());
+            if (!$model->validate()) {
+                Yii::error($model->errors);
+                return $this->render('signup', ['model' => $model,]);
+            } else {
+            }
+            $user = new User();
+            $user->username = $model->username;
+            $user->password = $model->password;
+            $user->save();
+            if ($user->hasErrors()) {
+                Yii::error($user->errors);
+                $model->addErrors($user->errors);
+                return $this->render('signup', ['model' => $model,]);
+            }
+            $model->login();
+            return $this->redirect(['shortened/create']);
+        }
+
+        return $this->render('signup', ['model' => $model,]);
     }
 
     /**
@@ -69,8 +117,7 @@ class SiteController extends Controller
      *
      * @return Response|string
      */
-    public function actionLogin()
-    {
+    public function actionLogin() {
         if (!Yii::$app->user->isGuest) {
             return $this->goHome();
         }
@@ -91,38 +138,35 @@ class SiteController extends Controller
      *
      * @return Response
      */
-    public function actionLogout()
-    {
+    public function actionLogout() {
         Yii::$app->user->logout();
 
         return $this->goHome();
     }
 
-    /**
-     * Displays contact page.
-     *
-     * @return Response|string
-     */
-    public function actionContact()
-    {
-        $model = new ContactForm();
-        if ($model->load(Yii::$app->request->post()) && $model->contact(Yii::$app->params['adminEmail'])) {
-            Yii::$app->session->setFlash('contactFormSubmitted');
+    // /**
+    //  * Displays contact page.
+    //  *
+    //  * @return Response|string
+    //  */
+    // public function actionContact() {
+    //     $model = new ContactForm();
+    //     if ($model->load(Yii::$app->request->post()) && $model->contact(Yii::$app->params['adminEmail'])) {
+    //         Yii::$app->session->setFlash('contactFormSubmitted');
 
-            return $this->refresh();
-        }
-        return $this->render('contact', [
-            'model' => $model,
-        ]);
-    }
+    //         return $this->refresh();
+    //     }
+    //     return $this->render('contact', [
+    //         'model' => $model,
+    //     ]);
+    // }
 
     /**
      * Displays about page.
      *
      * @return string
      */
-    public function actionAbout()
-    {
+    public function actionAbout() {
         return $this->render('about');
     }
 }

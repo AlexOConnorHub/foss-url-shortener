@@ -14,7 +14,10 @@ if (file_exists(__DIR__ . '/params_production.php')) {
 $config = [
     'id' => 'basic-console',
     'basePath' => dirname(__DIR__),
-    'bootstrap' => ['log'],
+    'bootstrap' => [
+        'log',
+        'queue',
+    ],
     'controllerNamespace' => 'app\commands',
     'aliases' => [
         '@bower' => '@vendor/bower-asset',
@@ -22,6 +25,10 @@ $config = [
         '@tests' => '@app/tests',
     ],
     'components' => [
+        'queue' => [
+            'class' => \yii\queue\file\Queue::class,
+            'path' => '@runtime/queue',
+        ],
         'cache' => [
             'class' => 'yii\caching\FileCache',
         ],

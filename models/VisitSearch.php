@@ -6,17 +6,16 @@ use yii\base\Model;
 use yii\data\ActiveDataProvider;
 use app\models\Shortened;
 use app\models\Visit;
+use Yii;
 
 /**
  * VisitSearch represents the model behind the search form of `app\models\Visit`.
  */
-class VisitSearch extends Visit
-{
+class VisitSearch extends Visit {
     /**
      * {@inheritdoc}
      */
-    public function rules()
-    {
+    public function rules() {
         return [
             [['id', 'shortened_id', 'user_id'], 'integer'],
             [['country_code', 'ip', 'user_agent', 'accepted_languages', 'created_at', 'isp'], 'safe'],
@@ -26,8 +25,7 @@ class VisitSearch extends Visit
     /**
      * {@inheritdoc}
      */
-    public function scenarios()
-    {
+    public function scenarios() {
         // bypass scenarios() implementation in the parent class
         return Model::scenarios();
     }
@@ -39,8 +37,7 @@ class VisitSearch extends Visit
      *
      * @return ActiveDataProvider
      */
-    public function search($params)
-    {
+    public function search($params) {
         $query = Visit::find();
 
         // add conditions that should always apply here
@@ -71,13 +68,6 @@ class VisitSearch extends Visit
             ->andFilterWhere(['like', 'accepted_languages', $this->accepted_languages])
             ->andFilterWhere(['like', 'isp', $this->isp]);
 
-        if (!\Yii::$app->user->isAdmin) {
-            $shortenedIds = Shortened::find()
-                ->select('id')
-                ->where(['user_id' => \Yii::$app->user->id])
-                ->column();
-            $query->andFilterWhere(['in', 'shortened_id', $shortenedIds]);
-        }
         return $dataProvider;
     }
 }

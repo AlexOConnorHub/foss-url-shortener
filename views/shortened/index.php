@@ -10,7 +10,7 @@ use yii\grid\GridView;
 /** @var app\models\ShortenedSearch $searchModel */
 /** @var yii\data\ActiveDataProvider $dataProvider */
 
-$this->title = 'Shorteneds';
+$this->title = 'Shortened';
 $this->params['breadcrumbs'][] = $this->title;
 ?>
 <div class="shortened-index">
@@ -23,26 +23,10 @@ $this->params['breadcrumbs'][] = $this->title;
 
     <?php // echo $this->render('_search', ['model' => $searchModel]); ?>
 
-    <?= GridView::widget([
+    <?= $this->render('_index', [
+        'searchModel' => $searchModel,
         'dataProvider' => $dataProvider,
-        'filterModel' => $searchModel,
-        'columns' => [
-            ['class' => 'yii\grid\SerialColumn'],
-
-            'id',
-            'user_id',
-            'visit_id',
-            'edit_uuid',
-            'redirect_uuid',
-            //'redirect_url:url',
-            [
-                'class' => ActionColumn::className(),
-                'urlCreator' => function ($action, Shortened $model, $key, $index, $column) {
-                    return Url::toRoute([$action, 'id' => $model->id]);
-                 }
-            ],
-        ],
-    ]); ?>
+    ]) ?>
 
 
 </div>

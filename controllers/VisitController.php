@@ -7,34 +7,33 @@ use app\models\VisitSearch;
 use yii\web\Controller;
 use yii\web\NotFoundHttpException;
 use yii\filters\VerbFilter;
+use Yii;
 
 /**
  * VisitController implements the CRUD actions for Visit model.
  */
-class VisitController extends Controller
-{
+class VisitController extends Controller {
     /**
      * @inheritDoc
      */
-    public function behaviors()
-    {
+    public function behaviors() {
         return array_merge(
             parent::behaviors(),
             [
                 'access' => [
-                    'class' => \yii\filters\AccessControl::className(),
+                    'class' => \yii\filters\AccessControl::class,
                     'rules' => [
                         [
                             'allow' => true,
                             'actions' => ['index'],
                             'matchCallback' => function ($rule, $action) {
-                                return \Yii::$app->user->isAdmin;
+                                return Yii::$app->user->isAdmin;
                             },
                         ],
                     ],
                 ],
                 'verbs' => [
-                    'class' => VerbFilter::className(),
+                    'class' => VerbFilter::class,
                     'actions' => [
                         'delete' => ['POST'],
                     ],
@@ -48,9 +47,7 @@ class VisitController extends Controller
      *
      * @return string
      */
-    public function actionIndex()
-    {
-        Visit::record();
+    public function actionIndex() {
         $searchModel = new VisitSearch();
         $dataProvider = $searchModel->search($this->request->queryParams);
         return $this->render('index', [
@@ -65,8 +62,7 @@ class VisitController extends Controller
      * @return string
      * @throws NotFoundHttpException if the model cannot be found
      */
-    public function actionView($id)
-    {
+    public function actionView($id) {
         return $this->render('view', [
             'model' => $this->findModel($id),
         ]);
@@ -77,8 +73,7 @@ class VisitController extends Controller
      * If creation is successful, the browser will be redirected to the 'view' page.
      * @return string|\yii\web\Response
      */
-    public function actionCreate()
-    {
+    public function actionCreate() {
         $model = new Visit();
 
         if ($this->request->isPost) {
@@ -101,8 +96,7 @@ class VisitController extends Controller
      * @return string|\yii\web\Response
      * @throws NotFoundHttpException if the model cannot be found
      */
-    public function actionUpdate($id)
-    {
+    public function actionUpdate($id) {
         $model = $this->findModel($id);
 
         if ($this->request->isPost && $model->load($this->request->post()) && $model->save()) {
@@ -121,8 +115,7 @@ class VisitController extends Controller
      * @return \yii\web\Response
      * @throws NotFoundHttpException if the model cannot be found
      */
-    public function actionDelete($id)
-    {
+    public function actionDelete($id) {
         $this->findModel($id)->delete();
 
         return $this->redirect(['index']);
@@ -135,8 +128,7 @@ class VisitController extends Controller
      * @return Visit the loaded model
      * @throws NotFoundHttpException if the model cannot be found
      */
-    protected function findModel($id)
-    {
+    protected function findModel($id) {
         if (($model = Visit::findOne(['id' => $id])) !== null) {
             return $model;
         }

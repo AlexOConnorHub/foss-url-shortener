@@ -23,7 +23,6 @@ class m230226_092011_shortened_init extends Migration {
         $this->createTable('shortened', [
             'id' => $this->primaryKey(),
             'user_id' => $this->integer(),
-            'visit_id' => $this->integer(),
             'edit_uuid' => $this->string()->notNull(),
             'redirect_uuid' => $this->string()->notNull(),
             'redirect_url' => $this->string()->notNull(),
@@ -56,7 +55,6 @@ class m230226_092011_shortened_init extends Migration {
 
         // add foreign keys
         $this->addForeignKey('fk-shortened-user_id', 'shortened', 'user_id', 'users', 'id', 'SET NULL');
-        $this->addForeignKey('fk-shortened-visit_id', 'shortened', 'visit_id', 'visits', 'id', 'SET NULL');
         $this->addForeignKey('fk-visits-shortened_id', 'visits', 'shortened_id', 'shortened', 'id', 'SET NULL');
         $this->addForeignKey('fk-visits-user_id', 'visits', 'user_id', 'users', 'id', 'SET NULL');
     }

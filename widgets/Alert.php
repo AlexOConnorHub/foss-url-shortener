@@ -23,8 +23,7 @@ use Yii;
  * @author Kartik Visweswaran <kartikv2@gmail.com>
  * @author Alexander Makarov <sam@rmcreative.ru>
  */
-class Alert extends \yii\bootstrap5\Widget
-{
+class Alert extends \yii\bootstrap5\Widget {
     /**
      * @var array the alert types configuration for the flash messages.
      * This array is setup as $key => $value, where:
@@ -48,8 +47,7 @@ class Alert extends \yii\bootstrap5\Widget
     /**
      * {@inheritdoc}
      */
-    public function run()
-    {
+    public function run() {
         $session = Yii::$app->session;
         $appendClass = isset($this->options['class']) ? ' ' . $this->options['class'] : '';
 

@@ -17,34 +17,19 @@ use yii\grid\GridView;
         'filterModel' => $searchModel,
         'columns' => [
             [
-                'format' => 'raw',
-                'attribute' => 'id',
-                'value' => function (Visit $model) {
-                    return Yii::$app->user->isAdmin
-                        ? Html::a($model->id, Url::toRoute(['/visit/view', 'id' => $model->id]))
-                        : $model->id;
-                }
-            ],
-            [
-                'format' => 'raw',
-                'attribute' => 'shortened_id',
-                'value' => function (Visit $model) {
-                    return $model->shortened ? Html::a($model->shortened->url, Url::toRoute(['/shortened/view', 'id' => $model->shortened->id])) : null;
-                }
-            ],
-            'country_code',
-            [
-                'format' => 'raw',
-                'attribute' => 'user_id',
-                'value' => function (Visit $model) {
-                    return $model->user ? Html::a($model->user->username, Url::toRoute(['/user/view', 'id' => $model->user->id])) : null;
-                }
+                'attribute' => 'created_at',
+                'label' => 'Date',
+                'format' => 'datetime',
             ],
             'ip',
             'user_agent',
             'accepted_languages',
-            'created_at',
+            'country_code',
             'isp',
+            [
+                'attribute' => 'user_id',
+                'visible' => Yii::$app->user->isAdmin,
+            ]
         ],
     ]); ?>
 </div>

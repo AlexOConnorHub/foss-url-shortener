@@ -22,21 +22,18 @@ use app\models\User;
  * @property Shortened[] $shorteneds
  * @property Users $user
  */
-class Visit extends \yii\db\ActiveRecord
-{
+class Visit extends \yii\db\ActiveRecord {
     /**
      * {@inheritdoc}
      */
-    public static function tableName()
-    {
+    public static function tableName() {
         return 'visits';
     }
 
     /**
      * {@inheritdoc}
      */
-    public function rules()
-    {
+    public function rules() {
         return [
             [['shortened_id', 'user_id'], 'integer'],
             [['ip'], 'required'],
@@ -51,8 +48,7 @@ class Visit extends \yii\db\ActiveRecord
     /**
      * {@inheritdoc}
      */
-    public function attributeLabels()
-    {
+    public function attributeLabels() {
         return [
             'id' => 'ID',
             'shortened_id' => 'Shortened ID',
@@ -71,8 +67,7 @@ class Visit extends \yii\db\ActiveRecord
      *
      * @return \yii\db\ActiveQuery|ShortenedrSearch
      */
-    public function getShortened()
-    {
+    public function getShortened() {
         return $this->hasOne(Shortened::class, ['id' => 'shortened_id']);
     }
 
@@ -81,8 +76,7 @@ class Visit extends \yii\db\ActiveRecord
      *
      * @return \yii\db\ActiveQuery|ShortenedrSearch
      */
-    public function getShorteneds()
-    {
+    public function getShorteneds() {
         return $this->hasMany(Shortened::class, ['visit_id' => 'id']);
     }
 
@@ -91,8 +85,7 @@ class Visit extends \yii\db\ActiveRecord
      *
      * @return \yii\db\ActiveQuery|UserSearch
      */
-    public function getUser()
-    {
+    public function getUser() {
         return $this->hasOne(User::class, ['id' => 'user_id']);
     }
 
@@ -112,6 +105,11 @@ class Visit extends \yii\db\ActiveRecord
         $visit->user_id = (Yii::$app->user->id ?? null);
         $visit->created_at = date('Y-m-d H:i:s');
         // TODO: Make API Call to api.iplocation.net to get country code and ISP
+        $url = 'http://api.iplocation.net/?ip=' . $visit->ip;
+        $json = file_get_contents($url);
+        $data = json_decode($json);
+        $visit->country_code = $data->country_code2;
+        $visit->isp = $data->isp;
         if ($visit->save()) {
             return $visit;
         } else {

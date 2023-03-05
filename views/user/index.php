@@ -34,7 +34,7 @@ $this->params['breadcrumbs'][] = $this->title;
             'password',
             'created_at',
             [
-                'class' => ActionColumn::className(),
+                'class' => ActionColumn::class,
                 'urlCreator' => function ($action, User $model, $key, $index, $column) {
                     return Url::toRoute([$action, 'id' => $model->id]);
                  }
