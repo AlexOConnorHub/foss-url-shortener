@@ -55,23 +55,7 @@ class SiteController extends Controller {
 
         // If post, is a user signing up
         if (Yii::$app->request->isPost) {
-            $model->load(Yii::$app->request->post());
-            if (!$model->validate()) {
-                Yii::error($model->errors);
-                return $this->render('index', ['model' => $model,]);
-            } else {
-            }
-            $user = new User();
-            $user->username = $model->username;
-            $user->password = $model->password;
-            $user->save();
-            if ($user->hasErrors()) {
-                Yii::error($user->errors);
-                $model->addErrors($user->errors);
-                return $this->render('index', ['model' => $model,]);
-            }
-            $model->login();
-            return $this->redirect(['shortened/create']);
+            return $this->actionSignup();
         }
 
         return $this->render('index', ['model' => $model,]);
@@ -88,11 +72,11 @@ class SiteController extends Controller {
 
         // If post, is a user signing up
         if (Yii::$app->request->isPost) {
-            $model->load(Yii::$app->request->post());
-            if (!$model->validate()) {
+            ;
+            if ($model->load(Yii::$app->request->post()) && $model->createLogin()) {
+                return $model->login();
                 Yii::error($model->errors);
                 return $this->render('signup', ['model' => $model,]);
-            } else {
             }
             $user = new User();
             $user->username = $model->username;
@@ -101,13 +85,11 @@ class SiteController extends Controller {
             if ($user->hasErrors()) {
                 Yii::error($user->errors);
                 $model->addErrors($user->errors);
-                return $this->render('signup', ['model' => $model,]);
             }
-            $model->login();
             return $this->redirect(['shortened/create']);
         }
 
-        return $this->render('signup', ['model' => $model,]);
+        return $this->render('signup', ['model' => $model]);
     }
 
     /**
