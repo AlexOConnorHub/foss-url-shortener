@@ -19,7 +19,6 @@ class SignupCest {
 
     }
 
-    // demonstrates `amLoggedInAs` method
     public function internalLoginById(\FunctionalTester $I) {
         $I->amLoggedInAs(1);
         $I->amOnPage('/');

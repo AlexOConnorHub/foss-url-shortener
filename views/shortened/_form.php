@@ -15,6 +15,7 @@ if (!isset($model)) {
 
 <div class="shortened-form">
     <?php $form = ActiveForm::begin([
+        'id' => 'short-form',
         'action' => ['/shortened/create'],
         'options' => ['class' => 'form-horizontal'],
     ]); ?>
