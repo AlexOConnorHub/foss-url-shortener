@@ -67,26 +67,20 @@ class SiteController extends Controller {
      * @return string
      */
     public function actionSignup() {
+        if (!Yii::$app->user->isGuest) {
+            return $this->goHome();
+        }
+
         $model = new LoginForm();
         $model->isNew = true;
 
         // If post, is a user signing up
         if (Yii::$app->request->isPost) {
-            ;
-            if ($model->load(Yii::$app->request->post()) && $model->createLogin()) {
-                return $model->login();
-                Yii::error($model->errors);
-                return $this->render('signup', ['model' => $model,]);
+            $model->load(Yii::$app->request->post());
+            $model->confirmPassword = Yii::$app->request->post('LoginForm')['confirmPassword'];
+            if ($model->createLogin() && $model->login()) {
+                return $this->render('index', ['model' => $model,]);
             }
-            $user = new User();
-            $user->username = $model->username;
-            $user->password = $model->password;
-            $user->save();
-            if ($user->hasErrors()) {
-                Yii::error($user->errors);
-                $model->addErrors($user->errors);
-            }
-            return $this->redirect(['shortened/create']);
         }
 
         return $this->render('signup', ['model' => $model]);

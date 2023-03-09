@@ -29,7 +29,6 @@ class LoginForm extends Model {
             [['username', 'password'], 'required'],
             ['rememberMe', 'boolean'],
             ['password', 'validatePassword'],
-            ['confirmPassword', 'compare', 'compareAttribute' => 'password', 'message' => "Passwords don't match"],
         ];
     }
 
@@ -46,6 +45,12 @@ class LoginForm extends Model {
 
             if (!$user || !$user->validatePassword($this->password)) {
                 $this->addError($attribute, 'Incorrect username or password.');
+            }
+        } else {
+            if ($this->isNew) {
+                if ($this->password != $this->confirmPassword) {
+                    $this->addError($attribute, 'Passwords do not match.');
+                }
             }
         }
     }
