@@ -3,15 +3,15 @@
 class LoginFormCest {
     public function _fixtures() {
         return [
-            'Users' => [
+            'User' => [
                 'class' => \app\tests\fixtures\UserFixture::class,
-                'dataFile' => codecept_data_dir() . 'user.php',
+                'dataFile' => '@app/tests/fixtures/_data/user.php',
             ],
         ];
     }
 
     public function _before(\FunctionalTester $I) {
-        $I->amOnRoute('site/login');
+        $I->amOnRoute('/site/login');
     }
 
     public function openLoginPage(\FunctionalTester $I) {
@@ -19,14 +19,12 @@ class LoginFormCest {
 
     }
 
-    // demonstrates `amLoggedInAs` method
     public function internalLoginById(\FunctionalTester $I) {
         $I->amLoggedInAs(1);
         $I->amOnPage('/');
         $I->see('Logout (admin)');
     }
 
-    // demonstrates `amLoggedInAs` method
     public function internalLoginByInstance(\FunctionalTester $I) {
         $I->amLoggedInAs(\app\models\User::findByUsername('admin'));
         $I->amOnPage('/');

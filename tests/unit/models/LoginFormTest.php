@@ -5,14 +5,16 @@ namespace tests\unit\models;
 use app\models\LoginForm;
 use Yii;
 
+use function Codeception\Extension\codecept_log;
+
 class LoginFormTest extends \Codeception\Test\Unit {
     private $model;
     
     public function _fixtures() {
         return [
-            'Users' => [
+            'User' => [
                 'class' => \app\tests\fixtures\UserFixture::class,
-                'dataFile' => codecept_data_dir() . 'user.php',
+                'dataFile' => '@app/tests/fixtures/_data/user.php',
             ],
         ];
     }
@@ -33,7 +35,7 @@ class LoginFormTest extends \Codeception\Test\Unit {
 
     public function testLoginWrongPassword() {
         $this->model = new LoginForm([
-            'username' => 'demo',
+            'username' => 'admin',
             'password' => 'wrong_password',
         ]);
 
@@ -51,6 +53,19 @@ class LoginFormTest extends \Codeception\Test\Unit {
         verify($this->model->login())->true();
         verify(Yii::$app->user->isGuest)->false();
         verify($this->model->errors)->arrayHasNotKey('password');
+    }
+
+    public function testCreateLogin() {
+        $this->model = new LoginForm([
+            'username' => 'new_user',
+            'password' => 'new_password1',
+            'confirmPassword' => 'new_password1',
+            'isNew' => true,
+        ]);
+        
+        verify($this->model->createLogin())->true();
+        verify($this->model->login())->true();
+        verify(Yii::$app->user->isGuest)->false();
     }
 
 }

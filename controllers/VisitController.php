@@ -27,7 +27,7 @@ class VisitController extends Controller {
                             'allow' => true,
                             'actions' => ['index'],
                             'matchCallback' => function ($rule, $action) {
-                                return Yii::$app->user->isAdmin;
+                                return (Yii::$app->user->identity ? Yii::$app->user->identity->isAdmin : false);
                             },
                         ],
                     ],

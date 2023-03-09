@@ -47,7 +47,7 @@ $this->registerLinkTag(['rel' => 'icon', 'type' => 'image/x-icon', 'href' => Yii
             ['label' => 'My links', 'url' => ['/shortened/index'], 'visible' => !Yii::$app->user->isGuest],
             ['label' => 'Signup', 'url' => ['/site/signup'], 'visible' => Yii::$app->user->isGuest],
             ['label' => 'Login', 'url' => ['/site/login'], 'visible' => Yii::$app->user->isGuest],
-            ['label' => 'Logout (' . Yii::$app->user->username . ')', 'url' => ['/site/logout'], 'visible' => !Yii::$app->user->isGuest],
+            ['label' => 'Logout (' . (Yii::$app->user->identity ? Yii::$app->user->identity->username : 'NA') . ')', 'url' => ['/site/logout'], 'visible' => !Yii::$app->user->isGuest],
         ]
     ]);
     NavBar::end();

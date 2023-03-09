@@ -66,15 +66,6 @@ class Shortened extends \yii\db\ActiveRecord {
     }
 
     /**
-     * Gets query for [[Visit]].
-     *
-     * @return \yii\db\ActiveQuery|VisitQuery
-     */
-    public function getVisit() {
-        return $this->hasOne(Visit::class, ['id' => 'visit_id']);
-    }
-
-    /**
      * Gets query for [[Visits]].
      *
      * @return \yii\db\ActiveQuery|VisitQuery
@@ -108,5 +99,21 @@ class Shortened extends \yii\db\ActiveRecord {
         }
         Yii::error('Unable to generate unique UUID for ' . $field);
         return false;
+    }
+
+    public function getVisited() {
+        $visit = new Visit();
+        $visit->shortened_id = $this->id;
+        $visit->ip = Yii::$app->request->userIP;
+        $visit->user_agent = Yii::$app->request->userAgent;
+        $str = '';
+        foreach (Yii::$app->request->getAcceptableLanguages() as $lang) {
+            $str .= $lang . ',';
+        }
+        $visit->accepted_languages = $str;
+        $visit->user_id = (Yii::$app->user->id ?? null);
+        $visit->created_at = date('Y-m-d H:i:s');
+        $visit->save();
+        return $visit->id;
     }
 }

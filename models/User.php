@@ -36,7 +36,11 @@ class User extends \yii\db\ActiveRecord implements \yii\web\IdentityInterface {
             [['username', 'password'], 'required'],
             [['created_at'], 'safe'],
             [['username', 'password', 'auth_key', 'access_token'], 'string', 'max' => 255],
+            [['username'], 'match', 'pattern' => '/^[a-zA-Z0-9_]+$/', 'message' => 'Username can only contain alphanumeric characters and underscores'],
             [['username'], 'unique'],
+            [['password'], 'match', 'pattern' => '/^.{8,}$/', 'message' => 'Password must be 8 characters long'],
+            [['password'], 'match', 'pattern' => '/\d/', 'message' => 'Password must contain a digit'],
+
         ];
     }
 
@@ -86,19 +90,10 @@ class User extends \yii\db\ActiveRecord implements \yii\web\IdentityInterface {
 
     /**
      * {@inheritdoc}
-     * @return UserSearch the active query used by this AR class.
-     */
-    public static function find() {
-        return new UserSearch(get_called_class());
-    }
-
-    /**
-     * {@inheritdoc}
      */
     public function getAuthKey() {
         return $this->auth_key;
     }
-
 
     /**
      * {@inheritdoc}

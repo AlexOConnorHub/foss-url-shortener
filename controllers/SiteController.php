@@ -55,23 +55,7 @@ class SiteController extends Controller {
 
         // If post, is a user signing up
         if (Yii::$app->request->isPost) {
-            $model->load(Yii::$app->request->post());
-            if (!$model->validate()) {
-                Yii::error($model->errors);
-                return $this->render('index', ['model' => $model,]);
-            } else {
-            }
-            $user = new User();
-            $user->username = $model->username;
-            $user->password = $model->password;
-            $user->save();
-            if ($user->hasErrors()) {
-                Yii::error($user->errors);
-                $model->addErrors($user->errors);
-                return $this->render('index', ['model' => $model,]);
-            }
-            $model->login();
-            return $this->redirect(['shortened/create']);
+            return $this->actionSignup();
         }
 
         return $this->render('index', ['model' => $model,]);
@@ -83,31 +67,23 @@ class SiteController extends Controller {
      * @return string
      */
     public function actionSignup() {
+        if (!Yii::$app->user->isGuest) {
+            return $this->goHome();
+        }
+
         $model = new LoginForm();
         $model->isNew = true;
 
         // If post, is a user signing up
         if (Yii::$app->request->isPost) {
             $model->load(Yii::$app->request->post());
-            if (!$model->validate()) {
-                Yii::error($model->errors);
-                return $this->render('signup', ['model' => $model,]);
-            } else {
+            $model->confirmPassword = Yii::$app->request->post('LoginForm')['confirmPassword'];
+            if ($model->createLogin() && $model->login()) {
+                return $this->render('index', ['model' => $model,]);
             }
-            $user = new User();
-            $user->username = $model->username;
-            $user->password = $model->password;
-            $user->save();
-            if ($user->hasErrors()) {
-                Yii::error($user->errors);
-                $model->addErrors($user->errors);
-                return $this->render('signup', ['model' => $model,]);
-            }
-            $model->login();
-            return $this->redirect(['shortened/create']);
         }
 
-        return $this->render('signup', ['model' => $model,]);
+        return $this->render('signup', ['model' => $model]);
     }
 
     /**

@@ -29,8 +29,6 @@ class LoginForm extends Model {
             [['username', 'password'], 'required'],
             ['rememberMe', 'boolean'],
             ['password', 'validatePassword'],
-            ['username', 'match', 'pattern' => '/^[a-zA-Z0-9_]+$/', 'message' => 'Username can only contain alphanumeric characters and underscores'],
-            ['confirmPassword', 'compare', 'compareAttribute' => 'password', 'message' => "Passwords don't match"],
         ];
     }
 
@@ -42,20 +40,17 @@ class LoginForm extends Model {
      * @param array $params the additional name-value pairs given in the rule
      */
     public function validatePassword($attribute, $params) {
-        if ($this->confirmPassword !== null) {
-            // Regex to check if password is strong enough
-            $regex = '/^(?=.*[A-Za-z])(?=.*\d)[A-Za-z\d]{8,}$/';
-            if (!preg_match($regex, $this->password)) {
-                $this->addError($attribute, 'Password must be at least 8 characters long and contain at least one number');
-                return;
-            }
-            return;
-        }
-        if (!$this->hasErrors()) {
+        if (!$this->hasErrors() && !$this->isNew) {
             $user = $this->getUser();
 
             if (!$user || !$user->validatePassword($this->password)) {
                 $this->addError($attribute, 'Incorrect username or password.');
+            }
+        } else {
+            if ($this->isNew) {
+                if ($this->password != $this->confirmPassword) {
+                    $this->addError($attribute, 'Passwords do not match.');
+                }
             }
         }
     }
@@ -82,5 +77,26 @@ class LoginForm extends Model {
         }
 
         return $this->_user;
+    }
+
+    /**
+     * Create Login 
+     * 
+     * @return bool whether the user is logged in successfully
+     */
+    public function createLogin() {
+        if ($this->validate()) {
+            $user = new User();
+            $user->username = $this->username;
+            $user->password = $this->password;
+            $user->save();
+            if ($user->hasErrors()) {
+                Yii::error($user->errors);
+                $this->addErrors($user->errors);
+                return false;
+            }
+            return true;
+        }
+        return false;
     }
 }

@@ -28,7 +28,7 @@ use yii\grid\GridView;
             'isp',
             [
                 'attribute' => 'user_id',
-                'visible' => Yii::$app->user->isAdmin,
+                'visible' => (Yii::$app->user->identity ? Yii::$app->user->identity->isAdmin : false),
             ]
         ],
     ]); ?>

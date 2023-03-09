@@ -16,7 +16,7 @@ $this->params['breadcrumbs'][] = $this->title;
     <h2>Redirect <?= Html::a(Html::encode($model->url), $model->url) ?> to <?= Html::a(Html::encode($model->redirect_url), $model->redirect_url) ?> </h2>
 
     <p>
-        <?= Html::a('Update redirect locaiton', ['update', 'uuid' => $model->edit_uuid], ['class' => 'btn btn-primary']) ?>
+        <?= Html::a('Update redirect location', ['update', 'uuid' => $model->edit_uuid], ['class' => 'btn btn-primary']) ?>
         <?= Html::a('Delete', ['delete', 'uuid' => $model->edit_uuid], [
             'class' => 'btn btn-danger',
             'data' => [
