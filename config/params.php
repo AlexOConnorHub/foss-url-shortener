@@ -14,7 +14,7 @@ $params = [
 ];
 
 if (file_exists(__DIR__ . '/params-production.php')) {
-    $params = array_merge($params, require __DIR__ . '/params-local.php');
+    $params = array_merge($params, require __DIR__ . '/params-production.php');
 }
 
 return $params;
