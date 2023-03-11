@@ -8,15 +8,10 @@
  * @license http://www.yiiframework.com/license/
  */
 
-defined('YII_DEBUG') or define('YII_DEBUG', true);
-defined('YII_ENV') or define('YII_ENV', 'dev');
-
-// If "prod.lock" exists, set YII_ENV to "prod", and disable debug mode
-if (file_exists(__DIR__ . '/prod.lock')) {
-    define('YII_ENV', 'prod');
-    define('YII_DEBUG', false);
+ if (!file_exists(__DIR__ . '/prod.lock')) {
+    defined('YII_DEBUG') or define('YII_DEBUG', true);
+    defined('YII_ENV') or define('YII_ENV', 'dev');
 }
-
 require __DIR__ . '/vendor/autoload.php';
 require __DIR__ . '/vendor/yiisoft/yii2/Yii.php';
 
